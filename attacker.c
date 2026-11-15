@@ -54,7 +54,16 @@ int main(void) {
 
     int len = 0;
     uint8_t ch = 0b00000000;
+    uint64_t half = SLOT_TIME / 2;
 
+    // sleep for T/2 to correct race, At the bounday following happens.
+    // 1000ms sender -> sends
+    // 1000ms receiver -> receives
+    // This introducing errors if attacker senses before sender sends.
+    struct timespec s = {.tv_sec = half / NS_PER_SEC,
+                         .tv_nsec = half % NS_PER_SEC};
+
+    nanosleep(&s, NULL);
     while (len < 8) {
       int lock = flock(fd, LOCK_NB | LOCK_EX);
 
@@ -75,6 +84,6 @@ int main(void) {
       nanosleep(&slot, NULL);
     }
 
-    printf("received char: %c", ch);
+    printf("\nreceived: %c\n", ch);
   }
 }

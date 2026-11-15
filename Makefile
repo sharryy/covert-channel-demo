@@ -9,6 +9,6 @@ all: $(TARGETS)
 
 clean:
 	rm -rf $(TARGETS)
-	rm *.dSYM
+	rm -rf *.dSYM
 
 .PHONY: all clean
