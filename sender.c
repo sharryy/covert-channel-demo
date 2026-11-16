@@ -6,7 +6,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#define MESSAGE "SUPER-SECRET"
+#define MESSAGE "SUPER-SECRET == "
 #define NS_PER_SEC 1000000000ULL
 #define SLOT_TIME 500000000ULL
 
