@@ -6,9 +6,9 @@
 #include <time.h>
 #include <unistd.h>
 
-#define MESSAGE "S"
+#define MESSAGE "SUPER-SECRET"
 #define NS_PER_SEC 1000000000ULL
-#define SLOT_TIME 1000000000ULL
+#define SLOT_TIME 500000000ULL
 
 #define PRINT_NS(label, t)                                                     \
   printf("%s %llu.%09llu\n", label, (t) / NS_PER_SEC, (t) % NS_PER_SEC)
@@ -56,18 +56,21 @@ int main(void) {
       unsigned char c = MESSAGE[i];
 
       for (int j = 7; j >= 0; j--) {
-        sleep_until(next_frame + (7 - j) * SLOT_TIME);
+        uint64_t slot = 8 * i + (7 - j);
+
+        sleep_until(next_frame + slot * SLOT_TIME);
 
         if ((c >> j) & 1) {
           flock(fd, LOCK_EX);
-          printf("1");
+          // printf("1");
         } else {
           flock(fd, LOCK_UN);
-          printf("0");
+          // printf("0");
         }
       }
 
-      printf(" - sent char: %c (%d)\n", c, c);
+      // printf(" - sent char: %c (%d)", c, c);
+      printf("%c", c);
 
       i++;
     }
