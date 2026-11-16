@@ -39,13 +39,11 @@ int main(void) {
         if (lock < 0) {
           if (errno == EWOULDBLOCK) {
             character |= 1 << (7 - len);
-            // printf("1");
           } else {
             perror("flock");
           }
         } else {
           character |= 0 << (7 - len);
-          // printf("0");
           flock(fd, LOCK_UN);
         }
 

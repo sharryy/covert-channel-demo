@@ -37,14 +37,11 @@ int main(void) {
 
         if ((c >> j) & 1) {
           flock(fd, LOCK_EX);
-          // printf("1");
         } else {
           flock(fd, LOCK_UN);
-          // printf("0");
         }
       }
 
-      // printf(" - sent char: %c (%d)", c, c);
       printf("%c", c);
 
       i++;
