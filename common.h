@@ -4,6 +4,8 @@
 
 #define NS_PER_SEC 1000000000ULL
 #define SLOT_TIME 100000ULL
+#define MESSAGE "SUPER-SECRET == "
+#define MESSAGE_LEN 16
 
 #define PRINT_NS(label, t)                                                     \
   printf("%s %llu.%09llu\n", label, (t) / NS_PER_SEC, (t) % NS_PER_SEC)

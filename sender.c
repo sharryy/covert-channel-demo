@@ -7,8 +7,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#define MESSAGE "SUPER-SECRET == "
-
 int main(void) {
   setvbuf(stdout, NULL, _IONBF, 0);
 

@@ -8,8 +8,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#define MESSAGE_LEN 16
-
 int main(void) {
   setvbuf(stdout, NULL, _IONBF, 0);
 
