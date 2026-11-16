@@ -3,7 +3,7 @@
 #include <time.h>
 
 #define NS_PER_SEC 1000000000ULL
-#define SLOT_TIME 500000000ULL
+#define SLOT_TIME 1000000ULL
 
 #define PRINT_NS(label, t)                                                     \
   printf("%s %llu.%09llu\n", label, (t) / NS_PER_SEC, (t) % NS_PER_SEC)
