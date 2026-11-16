@@ -1,4 +1,3 @@
-#include <_time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +23,17 @@ static uint64_t now_ns(void) {
   return (uint64_t)(ts.tv_sec * NS_PER_SEC) + (uint64_t)ts.tv_nsec;
 }
 
+void sleep_until(uint64_t target) {
+  uint64_t now = now_ns();
+
+  if (now < target) {
+    uint64_t diff = target - now;
+    struct timespec ts = {.tv_sec = diff / NS_PER_SEC,
+                          .tv_nsec = diff % NS_PER_SEC};
+    nanosleep(&ts, NULL);
+  }
+}
+
 int main(void) {
   setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -36,51 +46,24 @@ int main(void) {
     return -1;
   }
 
-  struct timespec slot = {.tv_sec = SLOT_TIME / NS_PER_SEC};
-  struct timespec tp;
+  uint64_t current = now_ns();
+  uint64_t next_frame = (current / frame_size + 1) * frame_size;
 
   while (1) {
-    if (clock_gettime(CLOCK_MONOTONIC, &tp) == -1) {
-      perror("clock_gettime");
-      return -1;
-    }
-
-    uint64_t cur = (uint64_t)tp.tv_sec * NS_PER_SEC + (uint64_t)tp.tv_nsec;
-    uint64_t frames = cur / frame_size;
-    uint64_t next = (frames + 1) * frame_size;
-    uint64_t wait = next - cur;
-
-    // PRINT_NS("loop at", cur);
-    // PRINT_NS("next frame", next);
-    // PRINT_NS("wait", wait);
-
-    struct timespec sleep = {.tv_sec = wait / NS_PER_SEC,
-                             .tv_nsec = wait % NS_PER_SEC};
-
-    printf("slot starting in: %llu.%09llu\n", wait / NS_PER_SEC,
-           wait % NS_PER_SEC);
-    nanosleep(&sleep, NULL);
-
-    uint64_t start = now_ns();
-    // PRINT_NS("started at", start);
-    // PRINT_NS("difference", (start - next));
-
     size_t i = 0;
 
     while (i < strlen(MESSAGE)) {
       unsigned char c = MESSAGE[i];
 
       for (int j = 7; j >= 0; j--) {
-        unsigned char bit = (c >> j) & 1;
+        sleep_until(next_frame + (7 - j) * SLOT_TIME);
 
-        if (bit == 1) {
+        if ((c >> j) & 1) {
           flock(fd, LOCK_EX);
           printf("1");
-          nanosleep(&slot, NULL);
         } else {
           flock(fd, LOCK_UN);
           printf("0");
-          nanosleep(&slot, NULL);
         }
       }
 
@@ -89,8 +72,6 @@ int main(void) {
       i++;
     }
 
-    uint64_t end = now_ns();
-    // PRINT_NS("ended at", end);
-    // printf("\n\n");
+    next_frame += frame_size;
   }
 }

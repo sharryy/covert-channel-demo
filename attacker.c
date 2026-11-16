@@ -13,7 +13,7 @@
 #define MESSAGE_LEN 1
 
 #define PRINT_NS(label, t)                                                     \
-  printf("%s %llu.%09llu", label, (t) / NS_PER_SEC, (t) % NS_PER_SEC)
+  printf("%s %llu.%09llu\n", label, (t) / NS_PER_SEC, (t) % NS_PER_SEC)
 
 static uint64_t now_ns(void) {
   struct timespec tp;
@@ -43,6 +43,8 @@ int main(void) {
     uint64_t frames = cur / frame_size;
     uint64_t next = (frames + 1) * frame_size;
     uint64_t wait = next - cur;
+
+    PRINT_NS("next frame", next);
 
     printf("slot starting in: %llu.%09llu\n", wait / NS_PER_SEC,
            wait % NS_PER_SEC);
